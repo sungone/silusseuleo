@@ -4,11 +4,11 @@ import SiluList
 from tkinter import INSERT
 import folium
 import webbrowser
-from googlemaps import Client
 
 bgColor = 'lemon chiffon'
 width, height = 310, 120
 MailList = []
+SavedTextList = []
 
 class silusseuleo :
     def __init__(self) :
@@ -27,7 +27,9 @@ class silusseuleo :
         self.initInputLabel() ## 검색창
         self.initSearchButton() ## 검색버튼
         self.initListBox() ## 가맹점 리스트 박스
+        self.initSavedTextDisplay()
 
+        self.initSaveTextButton()  # 정보 저장 버튼
         self.initInformation() ## 정보창
         self.initMap() ## 지도버튼
 
@@ -58,6 +60,20 @@ class silusseuleo :
         Search.pack()
         Search.place(x=40 , y=250)
         ListScrollbar.config(command=Search.yview) 
+
+        Search.bind("<ButtonRelease-1>" , self.listbox_click_handler)
+
+    def listbox_click_handler(self , event):
+        global Search
+        selected_index = Search.curselection()
+
+        InfoText.configure(state='normal')
+        InfoText.delete(1.0, END)
+
+        if selected_index:
+            selected_store_name = Search.get(selected_index)
+            self.InsertInformation(selected_store_name)
+
 
     def initInputLabel(self):   #검색 창
         global InputLabel
@@ -113,7 +129,7 @@ class silusseuleo :
 
     def initInformation(self): ## 가게의 정보를 알려주는 text box
         global InfoText
-        InfoText = Text(self.window, width=55, height=40, borderwidth=2, relief='ridge', cursor='heart')
+        InfoText = Text(self.window, width=40, height=10, borderwidth=2, relief='ridge', cursor='heart')
         InfoText.pack()
         InfoText.place(x=500, y=250)
         InfoText.configure(state='disabled')
@@ -130,5 +146,41 @@ class silusseuleo :
         folium.Marker([Lat, Long], popup=Name, icon=icon).add_to(map)   # 마커 지정
         map.save('silusseuleo_MAP.html')                                  # html 파일로 저장
         webbrowser.open_new('silusseuleo_MAP.html')
+
+    def initSaveTextButton(self):  # 정보 저장 버튼
+        SaveTextButton = Button(self.window, font=self.font2, bg='lavender blush', text="정보 저장", cursor='heart',
+                                command=self.save_text)
+        SaveTextButton.pack()
+        SaveTextButton.place(x=365, y=190)
+
+    def initSavedTextDisplay(self):
+        global SavedTextDisplay
+        SavedTextDisplay = Text(self.window, width=40, height=30, borderwidth=2, relief='ridge', cursor='heart')
+        SavedTextDisplay.pack()
+        SavedTextDisplay.place(x=500, y=400)
+        SavedTextDisplay.configure(state='disabled')
+
+    def save_text(self):
+        global InfoText, SavedTextList , SavedTextDisplay
+        new_text = InfoText.get(1.0, END).split("\n")
+        grouped_text = []
+        group = []
+        for line in new_text:
+            if line.startswith("사업장명") or line.startswith("도로명주소") or line.startswith("지번주소") :
+                group.append(line)
+
+        if group:  # 마지막 그룹 추가
+            grouped_text.append(group)
+        SavedTextList.extend(grouped_text)
+        print("Text saved:", SavedTextList)
+
+            # SavedTextDisplay에 정보 표시
+        SavedTextDisplay.configure(state='normal')
+        SavedTextDisplay.delete(1.0, END)
+        for group in SavedTextList:
+            for line in group:
+                SavedTextDisplay.insert(END, line + "\n")
+            SavedTextDisplay.insert(END, "\n")
+        SavedTextDisplay.configure(state='disabled')
 
 silusseuleo()
