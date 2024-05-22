@@ -10,8 +10,8 @@ def sendMail(MailList):
 
     html = ""   # "| "
     title = 'Eat_Today 정보 전송'
-    senderAddr = "sungwon000604@gmail.com"    # 보내는 사람 email 주소
-    recipientAddr = "hyuli0604@tukorea.ac.kr"   # 받는 사람 email 주소
+    senderAddr = "kjy8730728@gmail.com"    # 보내는 사람 email 주소
+    recipientAddr = "kjy8737440@naver.com"   # 받는 사람 email 주소
     passwd = "script11"
 
     for informaion in MailList:

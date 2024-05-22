@@ -2,8 +2,13 @@ from tkinter import *
 from tkinter import font
 import SiluList
 from tkinter import INSERT
-import folium
 import webbrowser
+from gmplot import gmplot
+import requests
+from PIL import Image, ImageTk
+import Image
+
+api_key = 'AIzaSyBLgIymSA0TWviqVmTyD2i4ukkXOaVSVAA'
 
 bgColor = 'lemon chiffon'
 width, height = 310, 120
@@ -124,8 +129,8 @@ class silusseuleo :
                 MailList.append("지번주소 : " + List[i][2])
 
                 Name = List[i][0]
-                Lat = List[i][3]
-                Long = List[i][4]
+                Lat = float(List[i][3])
+                Long = float(List[i][4])
 
     def initInformation(self): ## 가게의 정보를 알려주는 text box
         global InfoText
@@ -140,12 +145,34 @@ class silusseuleo :
         self.mapButton.place(x=1000, y=630)
 
     def openMap(self):
-        global Name, Lat, Long
-        map = folium.Map(location=[Lat, Long], zoom_start=15)           # 위도, 경도 지정
-        icon = folium.Icon(icon='glyphicon glyphicon-cutlery', color='pink')
-        folium.Marker([Lat, Long], popup=Name, icon=icon).add_to(map)   # 마커 지정
-        map.save('silusseuleo_MAP.html')                                  # html 파일로 저장
-        webbrowser.open_new('silusseuleo_MAP.html')
+        global Lat, Long
+        mapWindow = Toplevel()
+        mapWindow.title("google map")
+        url = f"https://maps.googleapis.com/maps/api/staticmap?center={Lat},{Long}&zoom=16&size=600x400&maptype=roadmap&markers=color:red|{Lat},{Long}&key={api_key}"
+
+        im = requests.get(url)
+        f = open("Map_Image.png","wb")
+        f.write(im.content)
+        Image.mapImage('Map_Image.png', mapWindow)
+
+        self.button_zoomin = Button(mapWindow, font=self.font2, text='로드뷰', command=self.openStreetview)
+        self.button_zoomin.pack()
+        self.button_zoomin.place(x=500,y=350)
+        #map_image = Image.open("Map_Image.png")
+        #map_photo = ImageTk.PhotoImage(map_image)
+        # gmap = gmplot.GoogleMapPlotter(Lat, Long, zoom=16, apikey=api_key)
+        # gmap.marker(Lat, Long, 'red')
+        # gmap.draw("silusseuleo_MAP.html")
+        #webbrowser.open('silusseuleo_MAP.html', new=1)
+        #self.openLoadview()
+
+    def openStreetview(self):
+        global Lat, Long
+        url = f"https://maps.googleapis.com/maps/api/streetview?location={Lat},{Long}&size={'800x600'}&key={api_key}"
+        lView = requests.get(url)
+        f = open("Load_View.png", "wb")
+        f.write(lView.content)
+        webbrowser.open_new("Load_View.png")
 
     def initSaveTextButton(self):  # 정보 저장 버튼
         SaveTextButton = Button(self.window, font=self.font2, bg='lavender blush', text="정보 저장", cursor='heart',
