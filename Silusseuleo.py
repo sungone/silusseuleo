@@ -7,6 +7,7 @@ from gmplot import gmplot
 import requests
 from PIL import Image, ImageTk
 import Image
+import Gmail
 
 api_key = 'AIzaSyBLgIymSA0TWviqVmTyD2i4ukkXOaVSVAA'
 
@@ -27,6 +28,7 @@ class silusseuleo :
         self.font3 = font.Font(self.window, size=16, weight='bold', family="메이플스토리")
 
         self.initLogo() ## 지역화폐 시루 로고
+
         self.initMail() ## 메일창 
 
         self.initInputLabel() ## 검색창
@@ -38,6 +40,7 @@ class silusseuleo :
         self.initInformation() ## 정보창
         self.initMap() ## 지도버튼
 
+
         self.window.mainloop()
 
     def initLogo(self):     
@@ -47,8 +50,13 @@ class silusseuleo :
 
     def initMail(self):
         self.mailImage = PhotoImage(file='resources/gmail.png')
-        self.mailButton = Button(self.window, cursor='heart', image=self.mailImage, bg=bgColor) # command=self.sendMail
+        self.mailButton = Button(self.window, cursor='heart', image=self.mailImage, bg=bgColor , command=self.sendMail)
         self.mailButton.place(x=1000, y=500)
+
+    def sendMail(self):
+        global MailList
+        MailList = SavedTextList
+        Gmail.sendMail(MailList)
 
     def initListBox(self) :
         global Search
