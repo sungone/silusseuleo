@@ -38,7 +38,7 @@ def fetch_data(page_index):
     return local_list
 
 with ThreadPoolExecutor(max_workers=10) as executor:
-    futures = [executor.submit(fetch_data, i) for i in range(100 , 200)] ## 시흥시 데이터 전체 개수는 1 , 392 를 넣어야함.. 시간이 오래걸려서 100 정도만 해
+    futures = [executor.submit(fetch_data, i) for i in range(100 , 150)] ## 시흥시 데이터 전체 개수는 1 , 392 를 넣어야함.. 시간이 오래걸려서 100 정도만 해
     
     for future in as_completed(futures):
         SiluList.extend(future.result())
